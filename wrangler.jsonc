@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "security-headers-worker",
+  "main": "index.js", 
+  "compatibility_date": "2025-12-27",
+  "observability": {
+    "enabled": true
+  }
+}
