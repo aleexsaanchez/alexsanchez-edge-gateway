@@ -12,7 +12,7 @@
 
 > **TL;DR**  
 > This repository documents a **production-style Zero Trust security architecture** built entirely on Cloudflare’s edge.  
-> Identity, traffic inspection, and security enforcement happen **before application code executes** — without traditional servers.
+> All access is identity-aware: **no identity, no access**.
 
 ---
 
@@ -21,12 +21,12 @@
 This project uses **Cloudflare as a global security control plane** to protect both:
 
 - A **public-facing site**
-- A **restricted internal dashboard**
+- A **Zero Trust–protected internal dashboard**
 
-All security decisions are enforced at the edge using:
-- Zero Trust access
+Security enforcement happens **before application code executes**, using:
+- Identity-aware access (Zero Trust)
 - Web Application Firewall (WAF)
-- Bot & threat intelligence
+- Bot & threat intelligence mitigation
 - Edge-executed logic via Cloudflare Workers
 
 🎯 **Goal:** Demonstrate real-world security engineering, not just configuration.
@@ -38,7 +38,7 @@ All security decisions are enforced at the edge using:
 > All traffic enters through Cloudflare’s Anycast network, where security is enforced *before* reaching the application.
 
 
-📌 **No origin servers are exposed**, dramatically reducing attack surface.
+📌 **No origin servers are exposed**, significantly reducing attack surface.
 
 ---
 
@@ -47,8 +47,8 @@ All security decisions are enforced at the edge using:
 This repository represents the **security control plane** of the system.
 
 | Component | Purpose |
-|--------|--------|
-| Cloudflare Worker | Edge security logic & headers |
+|---------|---------|
+| Cloudflare Worker | Edge security logic & header enforcement |
 | Documentation | Architecture, controls, validation |
 | Metadata API | Proof of edge execution |
 
@@ -60,14 +60,14 @@ This repository represents the **security control plane** of the system.
 
 ### 🛂 Zero Trust & Identity
 - Cloudflare Access enforcing **identity-aware access**
-- GitHub OAuth as the primary Identity Provider
-- Email-restricted internal access
-- OTP-based guest access for recruiters
-- JWT validation verified in protected dashboard
+- GitHub OAuth authentication (any authenticated account)
+- One-Time Pin (OTP) authentication for guest access
+- **Anonymous access fully blocked**
+- JWT propagation validated in the protected dashboard
 
 ---
 
-### ⚙️ Edge Security Logic (Workers)
+### ⚙️ Edge Security Logic (Cloudflare Workers)
 - Globally deployed Cloudflare Worker
 - Dynamic injection of security headers:
   - `Strict-Transport-Security`
@@ -76,7 +76,7 @@ This repository represents the **security control plane** of the system.
   - `Permissions-Policy`
 - Custom edge endpoint:
   - `/?metadata=true` → live request metadata (IP, country, Ray ID)
-- Strict CORS enforcement between subdomains
+- Strict CORS enforcement between public and secure subdomains
 
 ---
 
@@ -97,7 +97,7 @@ This repository represents the **security control plane** of the system.
 - Cloudflare Pages for static hosting
 - No backend servers
 - No exposed APIs
-- Security enforced **before** app logic
+- Security enforced **before** application logic
 
 ---
 
@@ -108,8 +108,8 @@ This repository represents the **security control plane** of the system.
 All security controls were tested using **controlled, non-destructive attack simulations** against infrastructure owned by the author.
 
 Validated areas include:
+- Zero Trust authentication enforcement (GitHub OAuth & OTP)
 - WAF rule effectiveness
-- Zero Trust access enforcement
 - Bot mitigation behavior
 - Edge security header enforcement
 - Threat intelligence challenges
@@ -124,27 +124,12 @@ Validated areas include:
 This repository follows a **security-first documentation model**:
 
 | Document | Purpose |
-|------|------|
+|--------|--------|
 | `README.md` | High-level overview (this file) |
 | `docs/architecture.md` | Traffic flow & system design |
 | `docs/security-controls.md` | Defensive controls & rationale |
 | `docs/security-validation.md` | Proof controls work |
 | `docs/threat-model.md` | Risk assumptions *(optional)* |
-
----
-
-<details>
-<summary>🧠 Why this documentation structure?</summary>
-
-Security systems are not documented like apps.
-
-This mirrors real-world practice:
-- **README** → Executive summary
-- **Architecture** → Design review
-- **Controls** → Defense inventory
-- **Validation** → Evidence & verification
-
-</details>
 
 ---
 
@@ -165,16 +150,7 @@ This mirrors real-world practice:
 All testing documented in this project was:
 - Performed only on systems owned by the author
 - Non-destructive
-- Intended solely for defensive validation
-
----
-
-## 🚀 Future Enhancements
-
-- Centralized logging / SIEM-style telemetry
-- Risk-based access policies
-- Device posture checks
-- Advanced edge anomaly detection
+- Intended solely to validate defensive security controls
 
 ---
 
