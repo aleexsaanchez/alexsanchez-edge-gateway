@@ -1,170 +1,181 @@
-🔐 Cloudflare Zero Trust Edge Security Stack
+# 🔐 Cloudflare Zero Trust Edge Security Stack
 
-Author: Alex Sanchez
-Domain: alexsanchez.site
+![Cloudflare](https://img.shields.io/badge/Cloudflare-Edge%20Security-orange)
+![Zero Trust](https://img.shields.io/badge/Security-Zero%20Trust-blue)
+![Serverless](https://img.shields.io/badge/Architecture-Serverless-green)
+![Status](https://img.shields.io/badge/Status-Production--Style-success)
 
-This project implements a production-style Zero Trust security architecture using Cloudflare as the global edge control plane.
-It secures both a public application and a protected internal dashboard without relying on traditional servers, enforcing identity, inspecting traffic, and applying security controls entirely at the edge.
+**Author:** Alex Sanchez  
+**Domain:** `alexsanchez.site`
 
-The goal of this project is not to build a website, but to design, implement, and validate a real-world edge security system.
+---
 
-🧠 High-Level Architecture
+> **TL;DR**  
+> This repository documents a **production-style Zero Trust security architecture** built entirely on Cloudflare’s edge.  
+> Identity, traffic inspection, and security enforcement happen **before application code executes** — without traditional servers.
 
-All traffic enters through Cloudflare’s global Anycast network, where security decisions are enforced before any application code executes.
+---
 
-User
- └── HTTPS Request
-      └── Cloudflare Edge
-           ├── WAF & Bot Management
-           ├── Zero Trust Access (GitHub OAuth / OTP)
-           ├── Cloudflare Worker (Edge Logic & Headers)
-           └── Cloudflare Pages (Serverless Hosting)
+## 🧠 Project Overview
 
+This project uses **Cloudflare as a global security control plane** to protect both:
 
-📌 No origin servers are exposed, significantly reducing attack surface.
+- A **public-facing site**
+- A **restricted internal dashboard**
 
-🏗️ What This Repository Is
+All security decisions are enforced at the edge using:
+- Zero Trust access
+- Web Application Firewall (WAF)
+- Bot & threat intelligence
+- Edge-executed logic via Cloudflare Workers
 
-This repository acts as the security control plane for the entire system.
+🎯 **Goal:** Demonstrate real-world security engineering, not just configuration.
 
-It contains:
+---
 
-The Cloudflare Worker that injects security headers and exposes edge APIs
+## 🏗️ High-Level Architecture
 
-Documentation for the overall security architecture
+> All traffic enters through Cloudflare’s Anycast network, where security is enforced *before* reaching the application.
 
-Validation evidence proving that controls work as intended
 
-Other repositories (public site and secure dashboard) are applications protected by this stack, not the security system itself.
+📌 **No origin servers are exposed**, dramatically reducing attack surface.
 
-🔑 Core Security Layers
-Zero Trust & Identity
+---
 
-Cloudflare Access enforcing identity-aware access
+## 📦 Repository Purpose
 
-GitHub OAuth as the primary Identity Provider
+This repository represents the **security control plane** of the system.
 
-Email-restricted access for internal users
+| Component | Purpose |
+|--------|--------|
+| Cloudflare Worker | Edge security logic & headers |
+| Documentation | Architecture, controls, validation |
+| Metadata API | Proof of edge execution |
 
-One-Time Pin (OTP) bypass policy for controlled guest access
+🧩 Other repositories (public site & secure dashboard) are **applications protected by this stack**.
 
-JWT propagation validated in the protected dashboard
+---
 
-Edge Security Logic (Workers)
+## 🔑 Core Security Layers
 
-Globally deployed Cloudflare Worker
+### 🛂 Zero Trust & Identity
+- Cloudflare Access enforcing **identity-aware access**
+- GitHub OAuth as the primary Identity Provider
+- Email-restricted internal access
+- OTP-based guest access for recruiters
+- JWT validation verified in protected dashboard
 
-Dynamic injection of:
+---
 
-Strict-Transport-Security
+### ⚙️ Edge Security Logic (Workers)
+- Globally deployed Cloudflare Worker
+- Dynamic injection of security headers:
+  - `Strict-Transport-Security`
+  - `Content-Security-Policy`
+  - `X-Frame-Options`
+  - `Permissions-Policy`
+- Custom edge endpoint:
+  - `/?metadata=true` → live request metadata (IP, country, Ray ID)
+- Strict CORS enforcement between subdomains
 
-Content-Security-Policy
+---
 
-X-Frame-Options
+### 🛡️ WAF & Threat Mitigation
+- Custom WAF rules protecting against:
+  - XSS & SQL injection patterns
+  - Sensitive path scanning (`.env`, `/wp-admin`)
+  - Automated bots & scrapers
+  - Abuse & rate-based attacks
+  - High-risk IPs (threat score intelligence)
+- Scrape Shield (email obfuscation)
+- Page Shield (third-party script monitoring)
+- Global security level set to **High**
 
-Permissions-Policy
+---
 
-Custom edge endpoint (?metadata=true) exposing live request metadata
+### ☁️ Serverless Architecture
+- Cloudflare Pages for static hosting
+- No backend servers
+- No exposed APIs
+- Security enforced **before** app logic
 
-Strict CORS policy between public and secure subdomains
+---
 
-WAF & Threat Mitigation
+## 🔬 Security Validation
 
-Custom WAF rules for:
+> This project does not assume security — it **verifies it**.
 
-XSS & SQL injection patterns
+All security controls were tested using **controlled, non-destructive attack simulations** against infrastructure owned by the author.
 
-Sensitive path scanning (.env, /wp-admin, etc.)
+Validated areas include:
+- WAF rule effectiveness
+- Zero Trust access enforcement
+- Bot mitigation behavior
+- Edge security header enforcement
+- Threat intelligence challenges
 
-Bot and automation mitigation
+📄 **Full testing methodology & results:**  
+➡️ `docs/security-validation.md`
 
-Rate limiting and abuse prevention
+---
 
-Threat score–based challenges
+## 📚 Documentation Structure
 
-Scrape Shield (email obfuscation)
+This repository follows a **security-first documentation model**:
 
-Page Shield (third-party script monitoring)
+| Document | Purpose |
+|------|------|
+| `README.md` | High-level overview (this file) |
+| `docs/architecture.md` | Traffic flow & system design |
+| `docs/security-controls.md` | Defensive controls & rationale |
+| `docs/security-validation.md` | Proof controls work |
+| `docs/threat-model.md` | Risk assumptions *(optional)* |
 
-Global security level set to High
+---
 
-Serverless Architecture
+<details>
+<summary>🧠 Why this documentation structure?</summary>
 
-Cloudflare Pages for static hosting
+Security systems are not documented like apps.
 
-No backend servers or exposed APIs
+This mirrors real-world practice:
+- **README** → Executive summary
+- **Architecture** → Design review
+- **Controls** → Defense inventory
+- **Validation** → Evidence & verification
 
-Security enforced before application execution
+</details>
 
-🔬 Security Validation
+---
 
-All security controls implemented in this project were actively tested using controlled, non-destructive attack simulations against infrastructure owned by the author.
+## 🎯 What This Project Demonstrates
 
-Testing includes validation of:
+✅ Zero Trust architecture  
+✅ Identity-aware access control  
+✅ Edge-based security enforcement  
+✅ WAF rule design & threat modeling  
+✅ Bot & abuse mitigation  
+✅ Security validation & documentation  
+✅ Production-style repo organization  
 
-WAF rule effectiveness
+---
 
-Zero Trust access enforcement
-
-Bot mitigation behavior
-
-Edge security header enforcement
-
-Threat intelligence–based challenges
-
-➡️ Detailed testing methodology and results:
-📄 docs/security-validation.md
-
-📚 Documentation Structure
-
-This repository follows a security-first documentation model:
-
-Architecture Overview
-📄 docs/architecture.md
-
-Security Controls & Design Decisions
-📄 docs/security-controls.md
-
-Security Testing & Validation (Proof of Effectiveness)
-📄 docs/security-validation.md
-
-Threat Model & Risk Assumptions (optional)
-📄 docs/threat-model.md
-
-🎯 What This Project Demonstrates
-
-Zero Trust architecture design
-
-Identity-aware access enforcement
-
-Edge-based security controls
-
-Web Application Firewall rule design
-
-Bot and threat intelligence mitigation
-
-Security validation and documentation practices
-
-Production-style repo and documentation structure
-
-⚠️ Ethical Notice
+## ⚠️ Ethical Notice
 
 All testing documented in this project was:
+- Performed only on systems owned by the author
+- Non-destructive
+- Intended solely for defensive validation
 
-Performed only against systems owned by the author
+---
 
-Non-destructive
+## 🚀 Future Enhancements
 
-Intended solely to validate defensive security controls
+- Centralized logging / SIEM-style telemetry
+- Risk-based access policies
+- Device posture checks
+- Advanced edge anomaly detection
 
-🚀 Next Steps
+---
 
-This project is designed to be extended with:
-
-Centralized logging (SIEM-style)
-
-Risk-based access policies
-
-Device posture checks
-
-Advanced anomaly detection at the edge
+> **This repository documents a security system — not just an application.**
