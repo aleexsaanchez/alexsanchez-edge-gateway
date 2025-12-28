@@ -1,35 +1,44 @@
 export default {
   async fetch(request, env) {
+    const url = new URL(request.url);
+
+    // 1. Handle Metadata Requests
+    if (url.searchParams.get("metadata") === "true") {
+      const metadata = {
+        ip: request.headers.get("cf-connecting-ip") || "Unknown",
+        country: request.headers.get("cf-ipcountry") || "Unknown",
+        ray: request.headers.get("cf-ray") || "Unknown",
+        // We send a string of headers as proof of the Worker's action
+        securityHeaders: "Strict-Transport-Security\nContent-Security-Policy\nX-Frame-Options\nX-Content-Type-Options"
+      };
+
+      return new Response(JSON.stringify(metadata), {
+        headers: {
+          "Content-Type": "application/json",
+          // IMPORTANT: This allows your secure site to fetch this data
+          "Access-Control-Allow-Origin": "https://secure.alexsanchez.site",
+          "Access-Control-Allow-Methods": "GET"
+        }
+      });
+    }
+
+    // 2. Handle Normal Site Traffic
     const response = await fetch(request);
     const newHeaders = new Headers(response.headers);
 
-    // 1. Strict-Transport-Security (Required for A+)
+    // Hardening Headers
     newHeaders.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-
-    // 2. Simplified Content-Security-Policy
-    // Note: No trailing semicolon at the very end, and 'self' must have single quotes.
-    newHeaders.set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' https://ajax.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; upgrade-insecure-requests");
-
-    // 3. X-Frame-Options
+    newHeaders.set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://ajax.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; upgrade-insecure-requests");
     newHeaders.set("X-Frame-Options", "SAMEORIGIN");
-
-    // 4. Permissions-Policy
-    newHeaders.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), interest-cohort=()");
-
-    // 5. X-Content-Type-Options
     newHeaders.set("X-Content-Type-Options", "nosniff");
-
-    // 6. Referrer-Policy
     newHeaders.set("Referrer-Policy", "strict-origin-when-cross-origin");
-
-    // 7. Remove identifying headers
-    newHeaders.delete("x-powered-by");
-    newHeaders.set("Server", "Cloudflare");
+    newHeaders.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+    newHeaders.set("Server", "Cloudflare-Edge-Shield");
 
     return new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
       headers: newHeaders,
     });
-  },
+  }
 };
