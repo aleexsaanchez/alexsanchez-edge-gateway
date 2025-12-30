@@ -39,26 +39,21 @@ Security enforcement happens **before application code executes**, using:
 
 ```mermaid
 graph TD
-    User((Visitor)) -->|HTTPS| CF_Edge{Cloudflare Edge}
+    User((Visitor)) -->|HTTPS Request| DNS[Cloudflare DNS]
+    DNS --> Edge{Cloudflare Edge}
     
-    subgraph "Cloudflare Security Suite"
-        CF_Edge --> WAF[WAF Custom Rules]
-        WAF --> Bot[Bot Fight Mode]
-        Bot --> Access{Zero Trust Access}
+    subgraph "Edge Security Enforcement"
+        Edge --> WAF["🛡️ WAF Rules<br/>(XSS, SQLi, malformed headers)"]
+        WAF --> Validation["✓ Request Validation<br/>(Host header, Method)"]
+        Validation --> Headers["📋 Security Headers<br/>(CSP, HSTS, X-Frame-Options)"]
     end
-
-    Access -->|Unauthorized| Login[Identity Challenge]
-    Access -->|Authorized| Worker[Edge Worker]
     
-    subgraph "Serverless Origin"
-        Worker --> Headers[Security Header Injection]
-        Headers --> Pages[Cloudflare Pages]
-    end
-
-    Pages -->|Response| User
+    Headers --> Worker["⚙️ Cloudflare Worker<br/>(Edge Logic & Metadata)"]
+    Worker --> Pages["📄 Static Origin<br/>(Cloudflare Pages)"]
+    Pages -->|HTTPS Response| User
 ```
 
-📌 **No origin servers are exposed**, significantly reducing attack surface.
+📌 **All security decisions happen at the edge** — the origin only serves authenticated, validated requests.
 
 ---
 
