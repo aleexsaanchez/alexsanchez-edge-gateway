@@ -9,13 +9,13 @@ This document validates the security controls protecting [alexsanchez.site](http
 ## Zero Trust & Identity Enforcement
 
 Application access is enforced at the edge using Cloudflare Access, ensuring that identity verification occurs before any request reaches application infrastructure. This removes anonymous exposure entirely and shifts authentication responsibility away from the origin.
-![1.1.2.png](securityValidationMedia/1.1.2.png)
+![unathenticated-access-redirection.png](securityValidationMedia/unauthenticated-access-redirection.png)
 
 Unauthenticated requests are intercepted at the edge and redirected to the Access login flow. The origin is never exposed to anonymous traffic. Authentication is validated through both GitHub OAuth and one-time PIN flows, demonstrating support for federated identity and fallback access.
 
 ![access-login-flow.png](securityValidationMedia/access-login-flow.png)
 
-![1.3.3.png](securityValidationMedia/1.3.3.png)
+![authentication-methods.png](securityValidationMedia/authentication-methods.png)
 
 Evidence includes unauthenticated access redirection, Access login flow, and successful authentication via both supported methods.
 
