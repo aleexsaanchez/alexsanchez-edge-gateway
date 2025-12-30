@@ -141,10 +141,8 @@ This repository follows a **security-first documentation model**:
 | Document | Purpose |
 |--------|--------|
 | `README.md` | High-level overview (this file) |
-| `docs/architecture.md` | Traffic flow & system design |
 | `docs/security-controls.md` | Defensive controls & rationale |
 | `docs/Security Validation & Attack Mitigation.md` | Proof controls work |
-| `docs/threat-model.md` | Risk assumptions *(optional)* |
 
 ---
 
