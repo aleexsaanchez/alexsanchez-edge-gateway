@@ -8,15 +8,13 @@ export default {
         ip: request.headers.get("cf-connecting-ip") || "Unknown",
         country: request.headers.get("cf-ipcountry") || "Unknown",
         ray: request.headers.get("cf-ray") || "Unknown",
-        // We send a string of headers as proof of the Worker's action
         securityHeaders: "Strict-Transport-Security\nContent-Security-Policy\nX-Frame-Options\nX-Content-Type-Options"
       };
 
       return new Response(JSON.stringify(metadata), {
         headers: {
           "Content-Type": "application/json",
-          // IMPORTANT: This allows your secure site to fetch this data
-          "Access-Control-Allow-Origin": "https://secure.alexsanchez.site",
+          "Access-Control-Allow-Origin": "https://secure.alexsanchez.site", //alow fetch
           "Access-Control-Allow-Methods": "GET"
         }
       });
