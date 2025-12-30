@@ -135,7 +135,7 @@ Validated areas include:
 - Threat intelligence challenges
 
 📄 **Full testing methodology & results:**  
-➡️ `docs/security-validation.md`
+➡️ `docs/Security Validation & Attack Mitigation.md`
 
 ---
 
@@ -148,7 +148,7 @@ This repository follows a **security-first documentation model**:
 | `README.md` | High-level overview (this file) |
 | `docs/architecture.md` | Traffic flow & system design |
 | `docs/security-controls.md` | Defensive controls & rationale |
-| `docs/security-validation.md` | Proof controls work |
+| `docs/Security Validation & Attack Mitigation.md` | Proof controls work |
 | `docs/threat-model.md` | Risk assumptions *(optional)* |
 
 ---
