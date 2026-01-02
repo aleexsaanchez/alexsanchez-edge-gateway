@@ -65,5 +65,3 @@ When security headers didn't appear in browser-based scanners, I learned to look
 Seeing the Cloudflare logs catch a simulated SQL injection attempt made months of theoretical study feel real. This project proved that security isn't a "plugin" added at the end; it is a **continuous layer of logic** that exists between the user and the code.
 
 ---
-
-> **"In security, we trust but verify."** > This project represents a commitment to that principle through hands-on implementation and rigorous testing.
