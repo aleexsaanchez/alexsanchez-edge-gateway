@@ -14,7 +14,7 @@ export default {
       return new Response(JSON.stringify(metadata), {
         headers: {
           "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "https://secure.alexsanchez.site", //alow fetch
+          "Access-Control-Allow-Origin": "https://secure.alexsanchez.site", //allow fetch
           "Access-Control-Allow-Methods": "GET"
         }
       });
